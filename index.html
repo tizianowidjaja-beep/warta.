@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warta Dunia - Portal Berita Terpercaya</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    body { background: #f4f5f7; color: #222; }
+
+    /* ===== HEADER ===== */
+    header {
+        background: linear-gradient(135deg, #0d1b2a, #1b263b);
+        color: #fff;
+        padding: 18px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 10px rgba(0,0,0,.3);
+    }
+    .logo { font-size: 28px; font-weight: 800; letter-spacing: 1px; cursor: pointer; }
+    .logo span { color: #e63946; }
+    .tagline { font-size: 12px; color: #adb5bd; display: block; font-weight: 400; }
+    .nav-btns button {
+        background: #e63946;
+        color: #fff;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 8px;
+        transition: .2s;
+    }
+    .nav-btns button:hover { background: #c1121f; }
+    .nav-btns button.secondary { background: #415a77; }
+    .nav-btns button.secondary:hover { background: #2f4359; }
+
+    /* ===== BREAKING BAR ===== */
+    .breaking {
+        background: #e63946;
+        color: #fff;
+        padding: 8px 30px;
+        font-size: 13px;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .breaking span { display: inline-block; animation: scroll 25s linear infinite; }
+    @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+    /* ===== LAYOUT ===== */
+    .container { max-width: 1100px; margin: 25px auto; padding: 0 20px; }
+    h2.section-title {
+        border-left: 5px solid #e63946;
+        padding-left: 12px;
+        margin-bottom: 20px;
+        font-size: 22px;
+    }
+
+    /* ===== KARTU BERITA ===== */
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 22px;
+    }
+    .card {
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        cursor: pointer;
+        transition: transform .2s, box-shadow .2s;
+        display: flex;
+        flex-direction: column;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,.15); }
+    .card img { width: 100%; height: 190px; object-fit: cover; background: #ddd; }
+    .card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .kategori {
+        display: inline-block;
+        background: #e63946;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-bottom: 8px;
+        width: fit-content;
+        text-transform: uppercase;
+    }
+    .card h3 { font-size: 17px; margin-bottom: 8px; line-height: 1.4; }
+    .card p { font-size: 13px; color: #666; flex: 1; }
+    .meta { font-size: 11px; color: #999; margin-top: 12px; display: flex; justify-content: space-between; }
+
+    /* ===== MODAL LOGIN ===== */
+    .modal-bg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.6);
+        z-index: 200;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    .modal-bg.active { display: flex; }
+    .modal {
+        background: #fff;
+        border-radius: 12px;
+        padding: 30px;
+        width: 100%;
+        max-width: 420px;
+        position: relative;
+        animation: pop .25s ease;
+    }
+    @keyframes pop { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal h2 { margin-bottom: 6px; font-size: 20px; }
+    .modal small { color: #777; display: block; margin-bottom: 18px; }
+    .close-x {
+        position: absolute; top: 12px; right: 16px;
+        font-size: 22px; cursor: pointer; color: #999; background: none; border: none;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+    .form-group textarea { min-height: 140px; resize: vertical; }
+    .btn-full {
+        width: 100%;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .btn-full:hover { background: #c1121f; }
+    .error-msg { color: #e63946; font-size: 13px; margin-top: 8px; display: none; }
+
+    /* ===== PANEL ADMIN ===== */
+    .admin-panel {
+        background: #fff;
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.08);
+        margin-bottom: 30px;
+    }
+    .admin-badge {
+        background: #2a9d8f; color: #fff; font-size: 12px;
+        padding: 4px 12px; border-radius: 20px; font-weight: 700;
+        display: inline-block; margin-bottom: 12px;
+    }
+    .preview-img {
+        max-width: 100%; max-height: 220px; border-radius: 8px;
+        margin-top: 10px; display: none; border: 2px solid #eee;
+    }
+    .btn-danger {
+        background: #c1121f; color: #fff; border: none;
+        padding: 6px 14px; border-radius: 5px; cursor: pointer; font-size: 12px;
+    }
+    .btn-danger:hover { background: #900d17; }
+
+    /* ===== DETAIL ARTIKEL ===== */
+    .detail-box {
+        background: #fff;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+    .detail-box img.hero {
+        width: 100%; max-height: 420px; object-fit: cover;
+        border-radius: 10px; margin: 18px 0;
+    }
+    .detail-box h1 { font-size: 28px; line-height: 1.3; margin-bottom: 10px; }
+    .detail-box .isi { font-size: 16px; line-height: 1.8; color: #333; white-space: pre-wrap; margin-top: 15px; }
+    .back-btn {
+        background: #415a77; color: #fff; border: none;
+        padding: 10px 20px; border-radius: 6px; cursor: pointer;
+        font-size: 14px; margin-bottom: 18px;
+    }
+
+    footer {
+        background: #0d1b2a; color: #adb5bd; text-align: center;
+        padding: 25px; margin-top: 40px; font-size: 13px;
+    }
+    .kosong { text-align: center; color: #999; padding: 40px; grid-column: 1/-1; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="logo" onclick="tampilkanBeranda()">🌍 WARTA <span>DUNIA</span>
+        <span class="tagline">Portal Berita Terkini &amp; Terpercaya</span>
+    </div>
+    <div class="nav-btns" id="navBtns"></div>
+</header>
+
+<div class="breaking"><span>🔴 TERKINI: Selamat datang di Warta Dunia — Sumber berita cepat, akurat, dan terpercaya dari seluruh penjuru dunia.</span></div>
+
+<div class="container" id="app"></div>
+
+<footer>© 2026 Warta Dunia — Seluruh hak cipta dilindungi. | Dibuat dengan ❤️ di Indonesia</footer>
+
+<!-- MODAL LOGIN -->
+<div class="modal-bg" id="modalLogin">
+    <div class="modal">
+        <button class="close-x" onclick="tutupModal('modalLogin')">×</button>
+        <h2>🔐 Akses Admin</h2>
+        <small>Masukkan kode sandi untuk mengelola berita.</small>
+        <div class="form-group">
+            <label>Kode Sandi</label>
+            <input type="password" id="inputSandi" placeholder="Masukkan kode sandi..." onkeydown="if(event.key==='Enter')prosesLogin()">
+        </div>
+        <button class="btn-full" onclick="prosesLogin()">MASUK</button>
+        <div class="error-msg" id="loginError">❌ Kode sandi salah! Coba lagi.</div>
+    </div>
+</div>
+
+<!-- MODAL BUAT ARTIKEL -->
+<div class="modal-bg" id="modalArtikel">
+    <div class="modal" style="max-width:560px;">
+        <button class="close-x" onclick="tutupModal('modalArtikel')">×</button>
+        <h2>📝 Buat Artikel Baru</h2>
+        <small>Isi data berita di bawah ini.</small>
+        <div class="form-group"><label>Judul Berita *</label><input type="text" id="fJudul" placeholder="Contoh: Gempa Bumi Mengguncang Jepang"></div>
+        <div class="form-group">
+            <label>Kategori</label>
+            <select id="fKategori">
+                <option>Dunia</option><option>Nasional</option><option>Politik</option>
+                <option>Ekonomi</option><option>Olahraga</option><option>Teknologi</option>
+                <option>Hiburan</option><option>Kesehatan</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Penulis *</label><input type="text" id="fPenulis" placeholder="Nama penulis / redaksi"></div>
+        <div class="form-group"><label>Isi Artikel *</label><textarea id="fIsi" placeholder="Tulis isi berita di sini..."></textarea></div>
+        <div class="form-group">
+            <label>Foto Berita</label>
+            <input type="file" id="fFoto" accept="image/*" onchange="previewFoto(this)">
+            <img id="imgPreview" class="preview-img" alt="Preview">
+        </div>
+        <button class="btn-full" onclick="simpanArtikel()">🚀 PUBLIKASIKAN BERITA</button>
+    </div>
+</div>
+
+<script>
+const SANDI = "Aku_Xinta/Dunia";
+let adminMode = sessionStorage.getItem("wd_admin") === "1";
+let fotoBase64 = "";
+
+/* ===== PENYIMPANAN DATA ===== */
+function ambilData() {
+    let data = JSON.parse(localStorage.getItem("wd_berita") || "null");
+    if (!data) {
+        data = [
+            {
+                id: 1,
+                judul: "Selamat Datang di Warta Dunia!",
+                kategori: "Dunia",
+                penulis: "Redaksi",
+                isi: "Warta Dunia adalah portal berita terbaru yang menyajikan informasi terkini dari seluruh penjuru dunia.\n\nKami berkomitmen menyajikan berita yang cepat, akurat, dan terpercaya. Terima kasih telah mengunjungi website kami!",
+                foto: "",
+                tanggal: new Date().toLocaleString("id-ID")
+            }
+        ];
+        localStorage.setItem("wd_berita", JSON.stringify(data));
+    }
+    return data;
+}
+function simpanData(data) { localStorage.setItem("wd_berita", JSON.stringify(data)); }
+
+/* ===== NAVIGASI ===== */
+function renderNav() {
+    const nav = document.getElementById("navBtns");
+    if (adminMode) {
+        nav.innerHTML = `
+            <button onclick="bukaModal('modalArtikel')">✍️ Tulis Berita</button>
+            <button class="secondary" onclick="logout()">🚪 Keluar Admin</button>`;
+    } else {
+        nav.innerHTML = `<button onclick="bukaModal('modalLogin')">🔐 Login Admin</button>`;
+    }
+}
+
+function bukaModal(id) {
+    document.getElementById(id).classList.add("active");
+    if (id === "modalLogin") { document.getElementById("inputSandi").value = ""; document.getElementById("loginError").style.display = "none"; document.getElementById("inputSandi").focus(); }
+}
+function tutupModal(id) { document.getElementById(id).classList.remove("active"); }
+
+/* ===== LOGIN ===== */
+function prosesLogin() {
+    const sandi = document.getElementById("inputSandi").value;
+    if (sandi === SANDI) {
+        adminMode = true;
+        sessionStorage.setItem("wd_admin", "1");
+        tutupModal("modalLogin");
+        renderNav();
+        tampilkanBeranda();
+        alert("✅ Selamat datang, Admin! Anda sekarang dapat membuat artikel berita.");
+    } else {
+        document.getElementById("loginError").style.display = "block";
+    }
+}
+function logout() {
+    adminMode = false;
+    sessionStorage.removeItem("wd_admin");
+    renderNav();
+    tampilkanBeranda();
+}
+
+/* ===== FOTO ===== */
+function previewFoto(input) {
+    const file = input.files[0];
+    if (!file) { fotoBase64 = ""; return; }
+    // Kompres gambar agar tidak melebihi kuota localStorage
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const skala = Math.min(1, 900 / img.width);
+            canvas.width = img.width * skala;
+            canvas.height = img.height * skala;
+            canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+            fotoBase64 = canvas.toDataURL("image/jpeg", 0.7);
+            const prev = document.getElementById("imgPreview");
+            prev.src = fotoBase64;
+            prev.style.display = "block";
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+/* ===== SIMPAN ARTIKEL ===== */
+function simpanArtikel() {
+    const judul = document.getElementById("fJudul").value.trim();
+    const penulis = document.getElementById("fPenulis").value.trim();
+    const isi = document.getElementById("fIsi").value.trim();
+    if (!judul || !penulis || !isi) { alert("⚠️ Judul, Penulis, dan Isi artikel wajib diisi!"); return; }
+
+    const data = ambilData();
+    data.unshift({
+        id: Date.now(),
+        judul, penulis, isi,
+        kategori: document.getElementById("fKategori").value,
+        foto: fotoBase64,
+        tanggal: new Date().toLocaleString("id-ID")
+    });
+    try {
+        simpanData(data);
+    } catch (e) {
+        alert("⚠️ Penyimpanan penuh! Coba gunakan foto berukuran lebih kecil.");
+        return;
+    }
+
+    // Reset form
+    document.getElementById("fJudul").value = "";
+    document.getElementById("fPenulis").value = "";
+    document.getElementById("fIsi").value = "";
+    document.getElementById("fFoto").value = "";
+    document.getElementById("imgPreview").style.display = "none";
+    fotoBase64 = "";
+    tutupModal("modalArtikel");
+    tampilkanBeranda();
+    alert("✅ Berita berhasil dipublikasikan!");
+}
+
+/* ===== TAMPILAN BERANDA ===== */
+function tampilkanBeranda() {
+    const data = ambilData();
+    const app = document.getElementById("app");
+    let html = "";
+
+    if (adminMode) {
+        html += `<div class="admin-panel">
+            <span class="admin-badge">👤 MODE ADMIN AKTIF</span>
+            <h2 style="margin-bottom:6px;">Panel Redaksi</h2>
+            <p style="color:#666;font-size:14px;">Anda login sebagai admin. Klik tombol <b>"✍️ Tulis Berita"</b> di kanan atas untuk membuat artikel baru beserta foto.</p>
+        </div>`;
+    }
+
+    html += `<h2 class="section-title">📰 Berita Terbaru</h2><div class="news-grid">`;
+
+    if (data.length === 0) {
+        html += `<div class="kosong">Belum ada berita yang dipublikasikan.</div>`;
+    } else {
+        data.forEach(b => {
+            const foto = b.foto || `https://placehold.co/600x400/1b263b/ffffff?text=Warta+Dunia`;
+            const ringkas = b.isi.substring(0, 110) + (b.isi.length > 110 ? "..." : "");
+            html += `
+            <div class="card" onclick="bukaDetail(${b.id})">
+                <img src="${foto}" alt="${b.judul}">
+                <div class="card-body">
+                    <span class="kategori">${b.kategori}</span>
+                    <h3>${b.judul}</h3>
+                    <p>${ringkas}</p>
+                    <div class="meta"><span>✍️ ${b.penulis}</span><span>🕐 ${b.tanggal}</span></div>
+                </div>
+            </div>`;
+        });
+    }
+    html += `</div>`;
+    app.innerHTML = html;
+    window.scrollTo(0, 0);
+}
+
+/* ===== DETAIL ARTIKEL ===== */
+function bukaDetail(id) {
+    const berita = ambilData().find(b => b.id === id);
+    if (!berita) return;
+    const foto = berita.foto ? `<img class="hero" src="${berita.foto}" alt="${berita.judul}">` : "";
+    const hapus = adminMode ? `<div style="margin-top:25px;text-align:right;"><button class="btn-danger" onclick="hapusArtikel(${berita.id})">🗑️ Hapus Artikel</button></div>` : "";
+    document.getElementById("app").innerHTML = `
+        <button class="back-btn" onclick="tampilkanBeranda()">← Kembali ke Beranda</button>
+        <div class="detail-box">
+            <span class="kategori">${berita.kategori}</span>
+            <h1>${berita.judul}</h1>
+            <div class="meta" style="font-size:13px;color:#888;margin-bottom:8px;">
+                <span>✍️ Oleh: <b>${berita.penulis}</b></span> &nbsp;|&nbsp; <span>🕐 ${berita.tanggal}</span>
+            </div>
+            ${foto}
+            <div class="isi">${berita.isi}</div>
+            ${hapus}
+        </div>`;
+    window.scrollTo(0, 0);
+}
+
+/* ===== HAPUS ARTIKEL ===== */
+function hapusArtikel(id) {
+    if (!adminMode) return;
+    if (!confirm("Yakin ingin menghapus artikel ini?")) return;
+    let data = ambilData().filter(b => b.id !== id);
+    simpanData(data);
+    tampilkanBeranda();
+}
+
+/* ===== INIT ===== */
+renderNav();
+tampilkanBeranda();
+</script>
+</body>
+</html>
